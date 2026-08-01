@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="LogixSys.AuthServer.Api/LogixSys.AuthServer.Api.csproj" />
+    <Project Path="LogixSys.AuthServer.Application/LogixSys.AuthServer.Application.csproj" />
+    <Project Path="LogixSys.AuthServer.Contracts/LogixSys.AuthServer.Contracts.csproj" />
+    <Project Path="LogixSys.AuthServer.Domain/LogixSys.AuthServer.Domain.csproj" />
+    <Project Path="LogixSys.AuthServer.Infrastructure/LogixSys.AuthServer.Infrastructure.csproj" />
+    <Project Path="LogixSys.AuthServer.Persistence/LogixSys.AuthServer.Persistence.csproj" />
+  </Folder>
+</Solution>

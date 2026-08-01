@@ -1,0 +1,23 @@
+@model LogixSys.AuthServer.Api.Models.LoginViewModel
+
+<h2>LogixSys Sign In</h2>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <div>
+        <label>Username</label>
+        <input asp-for="UserName" />
+    </div>
+
+    <div>
+        <label>Password</label>
+        <input asp-for="Password" type="password" />
+    </div>
+
+    <input asp-for="ReturnUrl" type="hidden" />
+
+    <button type="submit">
+        Sign In
+    </button>
+
+</form>
