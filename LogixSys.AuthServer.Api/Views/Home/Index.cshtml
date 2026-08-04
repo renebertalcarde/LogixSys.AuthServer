@@ -1,0 +1,21 @@
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="container mt-5">
+    <h1>Welcome</h1>
+
+    <p>
+        You are successfully authenticated.
+    </p>
+
+    <hr />
+
+    <dl>
+        <dt>Name</dt>
+        <dd>@User.Identity?.Name</dd>
+
+        <dt>Authenticated</dt>
+        <dd>@User.Identity?.IsAuthenticated</dd>
+    </dl>
+</div>

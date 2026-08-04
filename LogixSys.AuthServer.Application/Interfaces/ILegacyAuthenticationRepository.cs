@@ -1,4 +1,5 @@
-﻿using LogixSys.AuthServer.Domain.Authentication;
+﻿using LogixSys.AuthServer.Application.Authentication;
+using LogixSys.AuthServer.Domain.Authentication;
 
 namespace LogixSys.AuthServer.Application.Interfaces;
 
@@ -11,4 +12,8 @@ public interface ILegacyAuthenticationRepository
     Task<IReadOnlyList<string>> GetRolesAsync(
         string userId,
         CancellationToken cancellationToken = default);
+
+    Task<UserProfile?> GetUserProfileAsync(
+        string userId,
+        CancellationToken cancellationToken);
 }

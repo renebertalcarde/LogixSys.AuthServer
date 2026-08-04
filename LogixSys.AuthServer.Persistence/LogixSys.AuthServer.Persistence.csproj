@@ -21,4 +21,8 @@
     <ProjectReference Include="..\LogixSys.AuthServer.Domain\LogixSys.AuthServer.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

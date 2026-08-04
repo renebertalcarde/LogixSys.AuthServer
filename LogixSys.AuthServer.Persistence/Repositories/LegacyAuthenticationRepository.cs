@@ -1,4 +1,5 @@
-﻿using LogixSys.AuthServer.Application.Interfaces;
+﻿using LogixSys.AuthServer.Application.Authentication;
+using LogixSys.AuthServer.Application.Interfaces;
 using LogixSys.AuthServer.Domain.Authentication;
 using LogixSys.AuthServer.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
@@ -51,5 +52,34 @@ public sealed class LegacyAuthenticationRepository
             .Where(ur => ur.UserId == userId)
             .Select(ur => ur.Role.Name)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<UserProfile?> GetUserProfileAsync(
+    string userId,
+    CancellationToken cancellationToken = default)
+    {
+        var user = await _context.AspNetUsers
+            .AsNoTracking()
+            .Include(u => u.AspNetUserRoles)
+                .ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(
+                u => u.Id == userId,
+                cancellationToken);
+
+        if (user == null)
+            return null;
+
+        return new UserProfile
+        {
+            UserId = user.Id,
+            UserName = user.UserName,
+            Email = user.Email,
+            Disabled = user.Disabled ?? false,
+
+            Roles = user.AspNetUserRoles
+                .Select(r => r.Role.Name)
+                .OrderBy(r => r)
+                .ToList()
+        };
     }
 }

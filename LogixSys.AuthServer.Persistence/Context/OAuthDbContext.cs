@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OpenIddict.EntityFrameworkCore.Models;
 
 namespace LogixSys.AuthServer.Persistence.Context;
 

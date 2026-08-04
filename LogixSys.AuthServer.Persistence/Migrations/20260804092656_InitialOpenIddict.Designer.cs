@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LogixSys.AuthServer.Persistence.Migrations
 {
     [DbContext(typeof(OAuthDbContext))]
-    [Migration("20260801111842_InitialOpenIddict")]
+    [Migration("20260804092656_InitialOpenIddict")]
     partial class InitialOpenIddict
     {
         /// <inheritdoc />

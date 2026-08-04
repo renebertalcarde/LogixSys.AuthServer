@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Controllers\AuthorizationController.cs" />
     <Compile Remove="Controllers\RolesController.cs" />
     <Compile Remove="Controllers\UsersController.cs" />
   </ItemGroup>
@@ -31,10 +30,6 @@
     <ProjectReference Include="..\LogixSys.AuthServer.Contracts\LogixSys.AuthServer.Contracts.csproj" />
     <ProjectReference Include="..\LogixSys.AuthServer.Infrastructure\LogixSys.AuthServer.Infrastructure.csproj" />
     <ProjectReference Include="..\LogixSys.AuthServer.Persistence\LogixSys.AuthServer.Persistence.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\Account\" />
   </ItemGroup>
 
 </Project>

@@ -4,14 +4,15 @@
 
 <form method="post">
     @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="text-danger"></div>
     <div>
         <label>Username</label>
-        <input asp-for="UserName" />
+        <input asp-for="UserName" class="form-control" />
     </div>
 
     <div>
         <label>Password</label>
-        <input asp-for="Password" type="password" />
+        <input asp-for="Password" type="password" class="form-control" />
     </div>
 
     <input asp-for="ReturnUrl" type="hidden" />

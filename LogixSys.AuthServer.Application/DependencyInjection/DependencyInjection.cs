@@ -16,9 +16,8 @@ public static class DependencyInjection
                 Assembly.GetExecutingAssembly());
         });
 
-        services.AddScoped<
-            IAuthenticationService,
-            AuthenticationService>();
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<IUserProfileService, UserProfileService>();
 
         return services;
     }

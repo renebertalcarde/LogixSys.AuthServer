@@ -1,12 +1,14 @@
 ﻿using LogixSys.AuthServer.Api.Models;
-using LSAuth = LogixSys.AuthServer.Application.Authentication;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
+using LSAuth = LogixSys.AuthServer.Application.Authentication;
 
 namespace LogixSys.AuthServer.Api.Controllers;
 
+[Route("account")]
 public class AccountController : Controller
 {
     private readonly LSAuth.IAuthenticationService _authenticationService;
@@ -18,8 +20,18 @@ public class AccountController : Controller
         _authenticationService = authenticationService;
     }
 
+    [AllowAnonymous]
+    [HttpGet("login")]
+    public IActionResult Login(string? returnUrl = null)
+    {
+        return View(new LoginViewModel
+        {
+            ReturnUrl = returnUrl
+        });
+    }
 
-    [HttpPost]
+    [AllowAnonymous]
+    [HttpPost("login")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(
         LoginViewModel model,
@@ -42,10 +54,10 @@ public class AccountController : Controller
         }
 
         var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, result.UserId!),
-        new Claim(ClaimTypes.Name, result.UserName!)
-    };
+        {
+            new(ClaimTypes.NameIdentifier, result.UserId!),
+            new(ClaimTypes.Name, result.UserName!)
+        };
 
         foreach (var role in result.Roles)
         {
@@ -68,6 +80,6 @@ public class AccountController : Controller
             return Redirect(model.ReturnUrl);
         }
 
-        return Redirect("/");
+        return Redirect("/home");
     }
 }
