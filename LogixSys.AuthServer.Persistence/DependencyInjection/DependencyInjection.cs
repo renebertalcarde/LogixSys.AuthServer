@@ -16,29 +16,19 @@ public static class DependencyInjection
         services.AddDbContext<LegacyIdentityDbContext>(options =>
         {
             options.UseSqlServer(
-                configuration.GetConnectionString(
-                    "AuthDatabase"));
+                configuration.GetConnectionString("AuthDatabase")
+                );
         });
 
         services.AddDbContext<OAuthDbContext>(options =>
         {
             options.UseSqlServer(
-                configuration.GetConnectionString(
-                    "OAuthDatabase"));
+                configuration.GetConnectionString("OAuthDatabase")
+                );
             options.UseOpenIddict();
         });
 
-        services.AddOpenIddict()
-            .AddCore(options => 
-            {
-                options.UseEntityFrameworkCore()
-                .UseDbContext<OAuthDbContext>();
-            });
-
-        services.AddScoped<
-            ILegacyAuthenticationRepository,
-            LegacyAuthenticationRepository>();
-
+        services.AddScoped<ILegacyAuthenticationRepository, LegacyAuthenticationRepository>();
 
         return services;
     }
