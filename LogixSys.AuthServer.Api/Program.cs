@@ -5,6 +5,7 @@ using LogixSys.AuthServer.Infrastructure.DependencyInjection;
 using LogixSys.AuthServer.Persistence.DependencyInjection;
 using LogixSys.AuthServer.Api.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,21 @@ builder.Services
     .AddCookie(options =>
     {
         options.LoginPath = "/account/login";
+    });
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultScheme =
+            JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.Authority =
+            "https://localhost:7128";
+
+        options.RequireHttpsMetadata = true;
+
+        options.Audience = "LogixSys.Api";
     });
 
 builder.Services.AddAuthorization();

@@ -6,28 +6,28 @@ namespace LogixSys.AuthServer.Api.Helpers;
 
 public static class ClaimsPrincipalExtensions
 {
-    public static IEnumerable<string> GetDestinations(
-        this Claim claim)
+    public static IEnumerable<string> GetDestinations(this Claim claim)
     {
-        switch (claim.Type)
+        return claim.Type switch
         {
-            case Claims.Name:
-            case Claims.Subject:
-            case ClaimTypes.Name:
-            case ClaimTypes.Role:
-
-                return new[]
-                {
-                    OpenIddictConstants.Destinations.AccessToken,
-                    OpenIddictConstants.Destinations.IdentityToken
-                };
-
-            default:
-
-                return new[]
-                {
-                    OpenIddictConstants.Destinations.AccessToken
-                };
-        }
+            Claims.Name or Claims.Email or OpenIddictConstants.Claims.Subject =>
+            [
+                OpenIddictConstants.Destinations.AccessToken,
+                OpenIddictConstants.Destinations.IdentityToken
+            ],
+            OpenIddictConstants.Claims.Role =>
+            [
+                OpenIddictConstants.Destinations.AccessToken
+            ],
+            ClaimTypes.Name or ClaimTypes.Role =>
+            [
+                OpenIddictConstants.Destinations.AccessToken,
+                OpenIddictConstants.Destinations.IdentityToken
+            ],
+            _ => 
+            [
+                OpenIddictConstants.Destinations.AccessToken
+            ],
+        };
     }
 }

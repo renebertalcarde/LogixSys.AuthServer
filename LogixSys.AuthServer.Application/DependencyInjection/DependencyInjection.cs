@@ -13,11 +13,12 @@ public static class DependencyInjection
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(
-                Assembly.GetExecutingAssembly());
+            typeof(DependencyInjection).Assembly);
         });
 
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IUserProfileService, UserProfileService>();
+        services.AddScoped<IClaimsPrincipalFactory, ClaimsPrincipalFactory>();
 
         return services;
     }

@@ -1,4 +1,5 @@
-﻿using LogixSys.AuthServer.Application.Authentication;
+﻿using LogixSys.AuthServer.Api.Helpers;
+using LogixSys.AuthServer.Application.Authentication;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -14,94 +15,51 @@ namespace LogixSys.AuthServer.Api.Controllers;
 public class AuthorizationController : Controller
 {
     private readonly IUserProfileService _userProfileService;
+    private readonly IClaimsPrincipalFactory _claimsFactory;
 
     public AuthorizationController(
-        IUserProfileService userProfileService)
+     IUserProfileService userProfileService,
+     IClaimsPrincipalFactory claimsFactory)
     {
         _userProfileService = userProfileService;
+        _claimsFactory = claimsFactory;
     }
 
-[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-[HttpGet("authorize")]
-public async Task<IActionResult> Authorize(
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [HttpGet("authorize")]
+    public async Task<IActionResult> Authorize(
     CancellationToken cancellationToken)
-{
-    var request = HttpContext.GetOpenIddictServerRequest();
-
-    if (request is null)
-        return BadRequest();
-
-    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-    if (string.IsNullOrWhiteSpace(userId))
     {
-        await HttpContext.SignOutAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme);
+        var request = HttpContext.GetOpenIddictServerRequest();
 
-        return Challenge(
-            CookieAuthenticationDefaults.AuthenticationScheme);
-    }
+        if (request is null)
+            return BadRequest();
 
-    var profile = await _userProfileService.GetByIdAsync(
-        userId,
-        cancellationToken);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-    if (profile is null || profile.Disabled)
-    {
-        await HttpContext.SignOutAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme);
-
-        return Challenge(
-            CookieAuthenticationDefaults.AuthenticationScheme);
-    }
-
-    var identity = new ClaimsIdentity(
-        OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-
-        identity.AddClaim(
-        new Claim(
-            OpenIddictConstants.Claims.Subject,
-            profile.UserId)
-        .SetDestinations(
-            OpenIddictConstants.Destinations.AccessToken,
-            OpenIddictConstants.Destinations.IdentityToken));
-
-        identity.AddClaim(
-    new Claim(
-        OpenIddictConstants.Claims.Name,
-        profile.UserName)
-    .SetDestinations(
-        OpenIddictConstants.Destinations.AccessToken,
-        OpenIddictConstants.Destinations.IdentityToken));
-
-        if (!string.IsNullOrWhiteSpace(profile.Email))
-    {
-            identity.AddClaim(
-    new Claim(
-        OpenIddictConstants.Claims.Email,
-        profile.Email)
-    .SetDestinations(
-        OpenIddictConstants.Destinations.AccessToken,
-        OpenIddictConstants.Destinations.IdentityToken));
-    }
-
-    foreach (var role in profile.Roles)
-    {
-            identity.AddClaim(
-        new Claim(OpenIddictConstants.Claims.Role, role)
-            .SetDestinations(
-                OpenIddictConstants.Destinations.AccessToken,
-                OpenIddictConstants.Destinations.IdentityToken));
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return Challenge(CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
-    var principal = new ClaimsPrincipal(identity);
+        var profile = await _userProfileService.GetByIdAsync(userId, cancellationToken);
 
-    principal.SetScopes(request.GetScopes());
+        if (profile is null || profile.Disabled)
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return Challenge(CookieAuthenticationDefaults.AuthenticationScheme);
+        }
 
-    principal.SetResources("resource_server");
+        var principal = _claimsFactory.Create(profile);
+        principal.SetScopes(request.GetScopes());
+        principal.SetResources("LogixSys.Api");
 
-    return SignIn(
-        principal,
-        OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-}
+        foreach (var claim in principal.Claims)
+        {
+            claim.SetDestinations(ClaimsPrincipalExtensions.GetDestinations(claim));
+        }
+
+        return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+    }
 }
