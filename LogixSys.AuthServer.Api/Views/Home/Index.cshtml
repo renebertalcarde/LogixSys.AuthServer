@@ -18,4 +18,15 @@
         <dt>Authenticated</dt>
         <dd>@User.Identity?.IsAuthenticated</dd>
     </dl>
+
+    <hr />
+
+    <form asp-controller="Account" asp-action="Logout" method="post">
+        @Html.AntiForgeryToken()
+
+        <button type="submit">
+            Logout
+        </button>
+
+    </form>
 </div>

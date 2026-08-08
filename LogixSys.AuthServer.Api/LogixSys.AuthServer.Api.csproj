@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\AuthController.cs" />
     <Compile Remove="Controllers\RolesController.cs" />
     <Compile Remove="Controllers\UsersController.cs" />
   </ItemGroup>

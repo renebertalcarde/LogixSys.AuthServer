@@ -24,21 +24,12 @@ builder.Services
     .AddCookie(options =>
     {
         options.LoginPath = "/account/login";
-    });
-builder.Services
-    .AddAuthentication(options =>
-    {
-        options.DefaultScheme =
-            JwtBearerDefaults.AuthenticationScheme;
     })
-    .AddJwtBearer(options =>
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
     {
-        options.Authority =
-            "https://localhost:7128";
-
         options.RequireHttpsMetadata = true;
-
-        options.Audience = "LogixSys.Api";
+        options.Authority = builder.Configuration["Authentication:Authority"];
+        options.Audience = builder.Configuration["Authentication:Audience"];
     });
 
 builder.Services.AddAuthorization();
