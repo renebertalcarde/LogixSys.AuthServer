@@ -1,11 +1,12 @@
 ﻿using LogixSys.AuthServer.Api.Helpers;
-using Auth = LogixSys.AuthServer.Application.Authentication;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using System.Security.Claims;
+using System.Security.Principal;
+using Auth = LogixSys.AuthServer.Application.Authentication;
 
 namespace LogixSys.AuthServer.Api.Controllers;
 

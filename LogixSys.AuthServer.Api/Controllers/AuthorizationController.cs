@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using System.Security.Claims;
+using System.Security.Principal;
 
 namespace LogixSys.AuthServer.Api.Controllers;
 
