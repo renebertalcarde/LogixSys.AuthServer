@@ -7,8 +7,35 @@ public static class OpenIddictSeeder
 {
     public static async Task SeedAsync(IServiceProvider services)
     {
+
         var manager =
             services.GetRequiredService<IOpenIddictApplicationManager>();
+
+        var application = await manager.FindByClientIdAsync("test-client");
+
+        if (application is null)
+        {
+            throw new InvalidOperationException(
+                "test-client was not found.");
+        }
+
+        var clientId = await manager.GetClientIdAsync(application);
+        var displayName = await manager.GetDisplayNameAsync(application);
+
+        Console.WriteLine($"Client ID: {clientId}");
+        Console.WriteLine($"Display Name: {displayName}");
+
+        const string expectedRedirectUri =
+    "https://localhost:7128/signin-oidc";
+
+        var redirectUris = await manager.GetRedirectUrisAsync(application);
+
+        if (!redirectUris.Contains(expectedRedirectUri))
+        {
+            throw new InvalidOperationException(
+                $"Expected redirect URI '{expectedRedirectUri}' was not found. " +
+                $"Registered URIs: {string.Join(", ", redirectUris)}");
+        }
 
         if (await manager.FindByClientIdAsync("test-client") != null)
             return;
@@ -25,7 +52,8 @@ public static class OpenIddictSeeder
 
             RedirectUris =
             {
-                new Uri("https://oauth.pstmn.io/v1/callback")
+                new Uri("https://localhost:7128/signin-oidc")
+               //new Uri("https://oauth.pstmn.io/v1/callback")
             },
 
             Permissions =

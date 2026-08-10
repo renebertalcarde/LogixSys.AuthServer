@@ -1,4 +1,5 @@
-﻿using LogixSys.AuthServer.Application.Authentication;
+﻿using LogixSys.AuthServer.Api.Helpers;
+using LogixSys.AuthServer.Application.Authentication;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
@@ -76,6 +77,13 @@ public class TokenController : Controller
         // Rebuild a fresh ClaimsPrincipal from the latest database state.
         //
         var principal = _claimsPrincipalFactory.Create(profile);
+        principal.SetScopes(authenticateResult.Principal.GetScopes());
+        principal.SetResources("LogixSys.Api");
+
+        foreach (var claim in principal.Claims)
+        {
+            claim.SetDestinations(ClaimsPrincipalExtensions.GetDestinations(claim));
+        }
 
         return SignIn(
             principal,
