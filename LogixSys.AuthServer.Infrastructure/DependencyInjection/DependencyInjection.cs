@@ -38,7 +38,8 @@ public static class DependencyInjection
                     "api");
 
                 options.AddDevelopmentEncryptionCertificate()
-                       .AddDevelopmentSigningCertificate();
+                       .AddDevelopmentSigningCertificate()
+                       .DisableAccessTokenEncryption();
 
                 options.UseAspNetCore()
                        .EnableAuthorizationEndpointPassthrough()
