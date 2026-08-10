@@ -20,13 +20,14 @@ public class TestController : ControllerBase
             authenticated = User.Identity?.IsAuthenticated,
             name = User.Identity?.Name,
             userId = User.FindFirstValue(
-                OpenIddictConstants.Claims.Subject),
+                ClaimTypes.NameIdentifier),
             email = User.FindFirstValue(
-                OpenIddictConstants.Claims.Email),
+                ClaimTypes.Email),
 
             roles = User.FindAll(
-                    OpenIddictConstants.Claims.Role)
-                .Select(c => c.Value),
+                    ClaimTypes.Role)
+                .Select(c => c.Value)
+                .Distinct(),
 
             claims = User.Claims.Select(c => new
             {
@@ -45,7 +46,23 @@ public class TestController : ControllerBase
     {
         return Ok(new
         {
-            message = "Administrator authorization succeeded."
+            authenticated = User.Identity?.IsAuthenticated,
+            name = User.Identity?.Name,
+            userId = User.FindFirstValue(
+                ClaimTypes.NameIdentifier),
+            email = User.FindFirstValue(
+                ClaimTypes.Email),
+
+            roles = User.FindAll(
+                    ClaimTypes.Role)
+                .Select(c => c.Value)
+                .Distinct(),
+
+            claims = User.Claims.Select(c => new
+            {
+                c.Type,
+                c.Value
+            })
         });
     }
 }
