@@ -23,6 +23,7 @@
 	  <PackageReference Include="OpenIddict.AspNetCore" Version="7.6.0" />
 	  <PackageReference Include="OpenIddict.Server.AspNetCore" Version="7.6.0" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.16.17" />
+    <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
   </ItemGroup>
 
   <ItemGroup>
