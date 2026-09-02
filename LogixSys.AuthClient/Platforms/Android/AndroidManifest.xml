@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+		  package="com.logixsys.authclient">
+
+	<application android:label="LogixSys.AuthClient">
+	  <!-- Activity and intent-filters are declared in MainActivity.cs and will be merged at build time -->
+	</application>
+
+</manifest>

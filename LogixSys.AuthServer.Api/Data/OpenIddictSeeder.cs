@@ -1,4 +1,5 @@
 ﻿using OpenIddict.Abstractions;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace LogixSys.AuthServer.Api.Data;
 
@@ -96,6 +97,45 @@ public static class OpenIddictSeeder
                     {
                     OpenIddictConstants.Requirements.Features
                         .ProofKeyForCodeExchange
+                    }
+                });
+        }
+
+        application = await manager.FindByClientIdAsync("maui-client");
+
+        if (application is null)
+        {
+            await manager.CreateAsync(
+                new OpenIddictApplicationDescriptor
+                {
+                    ClientId = "maui-client",
+                    DisplayName = "LogixSys MAUI Client",
+                    ClientType = ClientTypes.Public, // native/public client — no client secret
+                    RedirectUris =
+                    {
+                        new Uri("io.identitymodel.native://callback") // must match registered redirect
+                    },
+                    PostLogoutRedirectUris =
+                    {
+                        new Uri("io.identitymodel.native://signout-callback")
+                    },
+                    Permissions =
+                    {
+                        OpenIddictConstants.Permissions.Endpoints.Authorization,
+                        OpenIddictConstants.Permissions.Endpoints.Token,
+                        OpenIddictConstants.Permissions.Endpoints.EndSession,
+                        OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode,
+                        OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
+                        OpenIddictConstants.Permissions.ResponseTypes.Code,
+                        OpenIddictConstants.Permissions.Prefixes.Scope + OpenIddictConstants.Scopes.OpenId,
+                        OpenIddictConstants.Permissions.Prefixes.Scope + OpenIddictConstants.Scopes.Profile,
+                        OpenIddictConstants.Permissions.Prefixes.Scope + OpenIddictConstants.Scopes.Email,
+                        OpenIddictConstants.Permissions.Prefixes.Scope + OpenIddictConstants.Scopes.OfflineAccess,
+                        OpenIddictConstants.Permissions.Prefixes.Scope + "api"
+                    },
+                    Requirements =
+                    {
+                        OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange // enforce PKCE
                     }
                 });
         }
