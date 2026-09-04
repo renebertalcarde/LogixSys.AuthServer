@@ -8,4 +8,7 @@
     <Project Path="LogixSys.AuthServer.Infrastructure/LogixSys.AuthServer.Infrastructure.csproj" />
     <Project Path="LogixSys.AuthServer.Persistence/LogixSys.AuthServer.Persistence.csproj" />
   </Folder>
+  <Project Path="LogixSys.MobileApp/LogixSys.MobileApp.csproj" Id="74e3dfcf-ccfe-43e2-9932-cf146015e336">
+    <Deploy Solution="Debug|*" />
+  </Project>
 </Solution>
