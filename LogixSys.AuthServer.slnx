@@ -1,6 +1,5 @@
 <Solution>
   <Folder Name="/src/">
-    <Project Path="LogixSys.AuthClient/LogixSys.AuthClient.csproj" />
     <Project Path="LogixSys.AuthServer.Api/LogixSys.AuthServer.Api.csproj" />
     <Project Path="LogixSys.AuthServer.Application/LogixSys.AuthServer.Application.csproj" />
     <Project Path="LogixSys.AuthServer.Contracts/LogixSys.AuthServer.Contracts.csproj" />
