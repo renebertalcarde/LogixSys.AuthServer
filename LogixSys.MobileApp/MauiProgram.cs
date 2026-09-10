@@ -1,4 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using LogixSys.MobileApp.Services;
+
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LogixSys.MobileApp
 {
@@ -18,6 +21,9 @@ namespace LogixSys.MobileApp
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
+
+            // Register authentication service
+            builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
             return builder.Build();
         }
