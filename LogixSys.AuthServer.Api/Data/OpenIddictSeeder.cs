@@ -113,11 +113,14 @@ public static class OpenIddictSeeder
                     ClientType = ClientTypes.Public, // native/public client — no client secret
                     RedirectUris =
                     {
-                        new Uri("io.identitymodel.native://callback") // must match registered redirect
+                        new Uri("io.identitymodel.native://callback"), // must match registered redirect for native apps
+                        // Add loopback redirect for Windows (system browser + loopback) so MAUI on Windows can use Authorization Code + PKCE
+                        new Uri("http://127.0.0.1:7890/callback")
                     },
                     PostLogoutRedirectUris =
                     {
-                        new Uri("io.identitymodel.native://signout-callback")
+                        new Uri("io.identitymodel.native://signout-callback"),
+                        new Uri("http://127.0.0.1:7890/signout-callback")
                     },
                     Permissions =
                     {
@@ -138,6 +141,59 @@ public static class OpenIddictSeeder
                         OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange // enforce PKCE
                     }
                 });
+        }
+        else
+        {
+            // If the application already exists, ensure it has the loopback redirect URIs and post-logout URIs.
+            var updateDescriptor = new OpenIddictApplicationDescriptor
+            {
+                ClientId = await manager.GetClientIdAsync(application),
+                ClientType = await manager.GetClientTypeAsync(application),
+                // then set RedirectUris / PostLogoutRedirectUris etc.
+            };
+
+            var redirects = new List<Uri>();
+
+            // Use manager to read redirect URIs from the opaque application object
+            var existingRedirects = await manager.GetRedirectUrisAsync(application);
+            if (existingRedirects != null)
+            {
+                foreach (var u in existingRedirects)
+                    redirects.Add(new Uri(u));
+            }
+
+            // ensure native scheme exists
+            if (!redirects.Exists(u => u.AbsoluteUri == "io.identitymodel.native://callback"))
+                redirects.Add(new Uri("io.identitymodel.native://callback"));
+
+            // ensure loopback exists
+            if (!redirects.Exists(u => u.AbsoluteUri == "http://127.0.0.1:7890/callback"))
+                redirects.Add(new Uri("http://127.0.0.1:7890/callback"));
+
+            foreach (var uri in redirects)
+                updateDescriptor.RedirectUris.Add(uri);
+
+            var postLogout = new List<Uri>();
+
+            // Use manager to read post-logout URIs
+            var existingPostLogout = await manager.GetPostLogoutRedirectUrisAsync(application);
+            if (existingPostLogout != null)
+            {
+                foreach (var u in existingPostLogout)
+                    postLogout.Add(new Uri(u));
+            }
+
+            if (!postLogout.Exists(u => u.AbsoluteUri == "io.identitymodel.native://signout-callback"))
+                postLogout.Add(new Uri("io.identitymodel.native://signout-callback"));
+
+            if (!postLogout.Exists(u => u.AbsoluteUri == "http://127.0.0.1:7890/signout-callback"))
+                postLogout.Add(new Uri("http://127.0.0.1:7890/signout-callback"));
+
+            foreach (var uri in postLogout)
+                updateDescriptor.PostLogoutRedirectUris.Add(uri);
+
+            // Persist the update
+            await manager.UpdateAsync(application, updateDescriptor);
         }
     }
 

@@ -1,7 +1,10 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Net;
+using System.Linq;
 using Microsoft.Maui.Authentication;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
 
 namespace LogixSys.MobileApp.Services;
@@ -16,10 +19,11 @@ public interface IAuthenticationService
 
 public class AuthenticationService : IAuthenticationService
 {
-    private const string Authority = "https://10.0.2.2:7128"; // AuthServer.Api (development)
+    private const string Authority = "https://localhost:7128"; // AuthServer.Api (development)
     private const string ClientId = "maui-client";
-    private const string RedirectUri = "io.identitymodel.native://callback";
-    private const string PostLogoutRedirect = "io.identitymodel.native://signout-callback";
+    // Use loopback for Windows; keep the native scheme for mobile
+    private static string RedirectUri => OperatingSystem.IsWindows() ? "http://127.0.0.1:7890/callback" : "io.identitymodel.native://callback";
+    private static string PostLogoutRedirect => OperatingSystem.IsWindows() ? "http://127.0.0.1:7890/signout-callback" : "io.identitymodel.native://signout-callback";
     private readonly HttpClient _http = new();
 
     private const string AccessTokenKey = "access_token";
@@ -47,12 +51,21 @@ public class AuthenticationService : IAuthenticationService
 
         var authorizeUrl = new Uri($"{Authority}/connect/authorize?client_id={ClientId}&redirect_uri={Uri.EscapeDataString(RedirectUri)}&response_type=code&scope={Uri.EscapeDataString("openid profile email api offline_access")}&code_challenge={codeChallenge}&code_challenge_method=S256");
 
-        var callbackUrl = new Uri(RedirectUri);
+        string code;
 
-        var result = await WebAuthenticator.Default.AuthenticateAsync(authorizeUrl, callbackUrl);
+        if (OperatingSystem.IsWindows())
+        {
+            // For Windows (desktop) use a loopback HTTP listener and open system browser
+            code = await AuthenticateWithLoopbackAsync(authorizeUrl);
+        }
+        else
+        {
+            var callbackUrl = new Uri(RedirectUri);
+            var result = await WebAuthenticator.Default.AuthenticateAsync(authorizeUrl, callbackUrl);
 
-        if (result == null || !result.Properties.TryGetValue("code", out var code) || string.IsNullOrEmpty(code))
-            throw new InvalidOperationException("Authorization did not return a code.");
+            if (result == null || !result.Properties.TryGetValue("code", out code) || string.IsNullOrEmpty(code))
+                throw new InvalidOperationException("Authorization did not return a code.");
+        }
 
         // Exchange code for tokens
         var tokenEndpoint = $"{Authority}/connect/token";
@@ -97,9 +110,62 @@ public class AuthenticationService : IAuthenticationService
         var endSession = new Uri($"{Authority}/connect/endsession?post_logout_redirect_uri={Uri.EscapeDataString(PostLogoutRedirect)}&id_token_hint=");
         try
         {
-            await WebAuthenticator.Default.AuthenticateAsync(endSession, new Uri(PostLogoutRedirect));
+            if (OperatingSystem.IsWindows())
+            {
+                // Open system browser for end session; no need to await a callback here.
+                await Browser.OpenAsync(endSession.ToString(), BrowserLaunchMode.SystemPreferred);
+            }
+            else
+            {
+                await WebAuthenticator.Default.AuthenticateAsync(endSession, new Uri(PostLogoutRedirect));
+            }
         }
         catch { }
+    }
+
+    private static async Task<string> AuthenticateWithLoopbackAsync(Uri authorizeUrl)
+    {
+        var prefix = "http://127.0.0.1:7890/";
+        using var listener = new HttpListener();
+        listener.Prefixes.Add(prefix);
+        listener.Start();
+        try
+        {
+            // Open the system browser to the authorization URL
+            await Browser.OpenAsync(authorizeUrl.ToString(), BrowserLaunchMode.SystemPreferred);
+
+            var contextTask = listener.GetContextAsync();
+            var completed = await Task.WhenAny(contextTask, Task.Delay(TimeSpan.FromMinutes(2)));
+            if (completed != contextTask)
+                throw new TimeoutException("Timeout waiting for authorization response.");
+
+            var context = contextTask.Result;
+            var qs = context.Request.Url.Query.TrimStart('?');
+            var queryParams = qs.Split('&', StringSplitOptions.RemoveEmptyEntries)
+                .Select(p => p.Split('=', 2))
+                .ToDictionary(kv => Uri.UnescapeDataString(kv[0]), kv => kv.Length > 1 ? Uri.UnescapeDataString(kv[1]) : string.Empty);
+
+            queryParams.TryGetValue("code", out var code);
+
+            var responseString = "<html><body>You can close this window and return to the app.</body></html>";
+            var buffer = Encoding.UTF8.GetBytes(responseString);
+            context.Response.ContentLength64 = buffer.Length;
+            context.Response.ContentType = "text/html";
+            await context.Response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+            context.Response.OutputStream.Close();
+
+            listener.Stop();
+
+            if (string.IsNullOrEmpty(code))
+                throw new InvalidOperationException("Authorization did not return a code.");
+
+            return code!;
+        }
+        finally
+        {
+            if (listener.IsListening)
+                listener.Stop();
+        }
     }
 
     public async Task<IDictionary<string, string>?> GetProfileAsync()
