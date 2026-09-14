@@ -29,7 +29,7 @@ builder.Services
     {
         options.RequireHttpsMetadata = true;
         options.Authority = builder.Configuration["Authentication:Authority"];
-        options.Audience = builder.Configuration["Authentication:Audience"];
+        options.Audience = builder.Configuration["Authentication:Audience"];        
     });
 
 builder.Services.AddAuthorization();

@@ -1,5 +1,8 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="HRMobile/HRMobile.csproj" Id="051a6762-07e6-4b76-8841-36f5b5487463">
+      <Deploy Solution="Debug|*" />
+    </Project>
     <Project Path="LogixSys.AuthServer.Api/LogixSys.AuthServer.Api.csproj" />
     <Project Path="LogixSys.AuthServer.Application/LogixSys.AuthServer.Application.csproj" />
     <Project Path="LogixSys.AuthServer.Contracts/LogixSys.AuthServer.Contracts.csproj" />
@@ -7,7 +10,4 @@
     <Project Path="LogixSys.AuthServer.Infrastructure/LogixSys.AuthServer.Infrastructure.csproj" />
     <Project Path="LogixSys.AuthServer.Persistence/LogixSys.AuthServer.Persistence.csproj" />
   </Folder>
-  <Project Path="LogixSys.MobileApp/LogixSys.MobileApp.csproj" Id="74e3dfcf-ccfe-43e2-9932-cf146015e336">
-    <Deploy Solution="Debug|*" />
-  </Project>
 </Solution>
