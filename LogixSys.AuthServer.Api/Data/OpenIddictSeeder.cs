@@ -54,7 +54,10 @@ public static class OpenIddictSeeder
                         + OpenIddictConstants.Scopes.Email,
 
                     OpenIddictConstants.Permissions.Prefixes.Scope
-                        + "api"
+                        + "api",
+
+                     OpenIddictConstants.Permissions.Prefixes.Scope
+                        + OpenIddictConstants.Scopes.OfflineAccess
                     },
 
                     Requirements =
@@ -145,7 +148,9 @@ public static class OpenIddictSeeder
                     + OpenIddictConstants.Scopes.Email,
 
                 OpenIddictConstants.Permissions.Prefixes.Scope
-                    + "api"
+                    + "api",
+                 OpenIddictConstants.Permissions.Prefixes.Scope
+                    + OpenIddictConstants.Scopes.OfflineAccess
                     },
 
                     Requirements =
