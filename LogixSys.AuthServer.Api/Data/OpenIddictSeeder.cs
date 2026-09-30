@@ -148,6 +148,9 @@ public static class OpenIddictSeeder
                     + OpenIddictConstants.Scopes.Email,
 
                 OpenIddictConstants.Permissions.Prefixes.Scope
+                    + OpenIddictConstants.Scopes.Roles,
+
+                OpenIddictConstants.Permissions.Prefixes.Scope
                     + "api",
 
                  OpenIddictConstants.Permissions.Prefixes.Scope
