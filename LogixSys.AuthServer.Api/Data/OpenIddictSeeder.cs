@@ -38,7 +38,6 @@ public static class OpenIddictSeeder
 
                     // Grant types
                     OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode,
-                    OpenIddictConstants.Permissions.GrantTypes.Password,
                     OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
 
                     // Response type
@@ -96,6 +95,63 @@ public static class OpenIddictSeeder
                     {
                     OpenIddictConstants.Requirements.Features
                         .ProofKeyForCodeExchange
+                    }
+                });
+        }
+
+        application = await manager.FindByClientIdAsync("logixsys-maui");
+
+        if (application is null)
+        {
+            await manager.CreateAsync(
+                new OpenIddictApplicationDescriptor
+                {
+                    ClientId = "logixsys-maui",
+
+                    DisplayName = "LogixSys MAUI Android",
+
+                    ClientType =
+                        OpenIddictConstants.ClientTypes.Public,
+
+                    ConsentType =
+                        OpenIddictConstants.ConsentTypes.Explicit,
+
+                    RedirectUris =
+                    {
+                new Uri("com.logixsys.auth://callback")
+                    },
+
+                    Permissions =
+                    {
+                // Endpoints
+                OpenIddictConstants.Permissions.Endpoints.Authorization,
+                OpenIddictConstants.Permissions.Endpoints.Token,
+
+                // Grant types
+                OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode,
+                OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
+
+                // Response type
+                OpenIddictConstants.Permissions.ResponseTypes.Code,
+
+                // Scopes
+                OpenIddictConstants.Permissions.Prefixes.Scope
+                    + OpenIddictConstants.Scopes.OpenId,
+
+                OpenIddictConstants.Permissions.Prefixes.Scope
+                    + OpenIddictConstants.Scopes.Profile,
+
+                OpenIddictConstants.Permissions.Prefixes.Scope
+                    + OpenIddictConstants.Scopes.Email,
+
+                OpenIddictConstants.Permissions.Prefixes.Scope
+                    + "api"
+                    },
+
+                    Requirements =
+                    {
+                OpenIddictConstants.Requirements.Features
+                    .ProofKeyForCodeExchange
                     }
                 });
         }

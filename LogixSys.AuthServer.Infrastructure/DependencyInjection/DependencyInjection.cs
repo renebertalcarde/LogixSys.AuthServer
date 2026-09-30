@@ -23,18 +23,24 @@ public static class DependencyInjection
             })
             .AddServer(options =>
             {
-                options.SetAuthorizationEndpointUris("/connect/authorize")
-                       .SetTokenEndpointUris("/connect/token");
+                options.SetIssuer(
+                    new Uri("https://localhost:7128/"));
+
+                options.SetAuthorizationEndpointUris(
+                    "/connect/authorize");
+
+                options.SetTokenEndpointUris(
+                    "/connect/token");
 
                 options.AllowAuthorizationCodeFlow()
                        .RequireProofKeyForCodeExchange()
-                       .AllowPasswordFlow()
                        .AllowRefreshTokenFlow();
 
                 options.RegisterScopes(
                     OpenIddictConstants.Scopes.OpenId,
                     OpenIddictConstants.Scopes.Profile,
                     OpenIddictConstants.Scopes.Email,
+                    OpenIddictConstants.Scopes.Roles,
                     "api");
 
                 options.AddDevelopmentEncryptionCertificate()
