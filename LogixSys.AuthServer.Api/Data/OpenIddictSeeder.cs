@@ -149,6 +149,7 @@ public static class OpenIddictSeeder
 
                 OpenIddictConstants.Permissions.Prefixes.Scope
                     + "api",
+
                  OpenIddictConstants.Permissions.Prefixes.Scope
                     + OpenIddictConstants.Scopes.OfflineAccess
                     },
