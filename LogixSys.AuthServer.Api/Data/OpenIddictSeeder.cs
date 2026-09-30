@@ -117,7 +117,7 @@ public static class OpenIddictSeeder
                         OpenIddictConstants.ClientTypes.Public,
 
                     ConsentType =
-                        OpenIddictConstants.ConsentTypes.Explicit,
+                        OpenIddictConstants.ConsentTypes.Implicit,
 
                     RedirectUris =
                     {
