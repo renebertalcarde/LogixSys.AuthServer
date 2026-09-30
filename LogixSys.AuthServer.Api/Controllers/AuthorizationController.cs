@@ -74,16 +74,13 @@ public class AuthorizationController : Controller
                 "The OpenID Connect request cannot be retrieved.");
 
         if (!request.IsAuthorizationCodeGrantType() &&
-            !request.IsRefreshTokenGrantType())
+     !request.IsRefreshTokenGrantType())
         {
-            return Forbid(
-                new AuthenticationProperties(
-                    new Dictionary<string, string?>
-                    {
-                        [OpenIddictServerAspNetCoreConstants.Properties.Error] =
-                            OpenIddictConstants.Errors.UnsupportedGrantType
-                    }),
-                OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            return BadRequest(new
+            {
+                error = OpenIddictConstants.Errors.UnsupportedGrantType,
+                error_description = "The specified grant type is not supported."
+            });
         }
 
         var result = await HttpContext.AuthenticateAsync(
